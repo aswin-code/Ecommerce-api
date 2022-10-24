@@ -2,11 +2,11 @@ const userModel = require('../models/userModel');
 const twilio = require('../utils/twilio')
 const bcrypt = require('bcrypt')
 exports.signup = async (req, res) => {
-    const { email, password, phone } = req.body
+    const { email, password, phone, fullname } = req.body
     try {
         const olduser = await userModel.findOne({ email })
         if (olduser) return res.json({ message: "user already exist" })
-        const newUser = new userModel({ email, password, phone })
+        const newUser = new userModel({ email, password, phone, fullname })
         await newUser.save()
         twilio.sendOtp(phone)
         res.status(201).json(newUser)

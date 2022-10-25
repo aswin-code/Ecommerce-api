@@ -4,11 +4,7 @@ const userSchema = mongoose.Schema({
     fullname: String,
     email: String,
     password: String,
-    phone: Number,
-    verified: {
-        type: Boolean,
-        default: false
-    }
+    phone: String
 })
 userSchema.pre('save', async function (next) {
     try {

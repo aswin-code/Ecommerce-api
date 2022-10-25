@@ -5,6 +5,10 @@ const userSchema = mongoose.Schema({
     email: String,
     password: String,
     phone: Number,
+    verified: {
+        type: Boolean,
+        default: false
+    }
 })
 userSchema.pre('save', async function (next) {
     try {

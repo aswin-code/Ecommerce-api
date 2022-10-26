@@ -3,8 +3,9 @@ const router = express.Router()
 const userController = require('../controller/userController')
 
 
-router.route('/:id')
+router.route('/')
     .get(userController.getAUser)
+router.route('/:id')
+    .get(userController.getAuser)
     .patch(userController.updateUser)
-router.route('/:id/changePassword')
 module.exports = router

@@ -22,7 +22,18 @@ exports.createUser = async (req, res) => {
 }
 exports.getAUser = async (req, res) => {
     try {
+        const user = await userModel.findOne({ email: req.body.email })
+        // if(!user) return res.status(201).json(user)
+        if (!user) return res.status(302).json(user)
+        res.status(200).json(user)
+    } catch (error) {
+        console.log(error)
+    }
+}
+exports.getAuser = async (req, res) => {
+    try {
         const user = await userModel.findById(req.params.id)
+        if (!user) return res.status(400).json(user)
         res.status(200).json(user)
     } catch (error) {
         console.log(error)

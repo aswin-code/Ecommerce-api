@@ -22,9 +22,9 @@ exports.createUser = async (req, res) => {
 }
 exports.getAUser = async (req, res) => {
     try {
-        const user = await userModel.findOne({ email: req.body.email })
+        const user = await userModel.findOne({ email: req.query.email })
         // if(!user) return res.status(201).json(user)
-        if (!user) return res.status(302).json(user)
+        if (!user) return res.status(302).json({ messsage: 'no user found' })
         res.status(200).json(user)
     } catch (error) {
         console.log(error)

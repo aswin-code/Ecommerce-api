@@ -1,6 +1,8 @@
 const userModel = require('../models/userModel');
 const twilio = require('../utils/twilio')
 const bcrypt = require('bcrypt')
+const nodemailer = require('nodemailer')
+const otpModel = require('../models/otp')
 
 
 exports.signup = async (req, res) => {
@@ -32,16 +34,12 @@ exports.login = async (req, res) => {
 
 exports.verifyotp = async (req, res) => {
     try {
-        const { otp, phone } = req.body
-
-        const data = await twilio.verifyOtp(phone, otp)
-        if (data?.valid) {
-
-            res.status(200).json({ status: 'ok', message: "otp verified successfully", verified: true })
-
-        } else {
-            res.status(401).json({ status: 'failed', message: "invaild otp ", verified: false })
-        }
+        const { otp, email } = req.body
+        const found = await otpModel.findOne({ userid: email })
+        if (!found) return res.status(401).json({ message: 'something went wrong' })
+        if (found.otp !== otp) return res.status(401).json({ message: 'invalid otp' });
+        await otpModel.findOneAndDelete({ userid: email })
+        res.status(200).json({ status: 'ok', message: "otp verified successfully", verified: true })
     } catch (error) {
         console.log(error)
     }
@@ -50,8 +48,11 @@ exports.verifyotp = async (req, res) => {
 
 exports.sendOtp = async (req, res) => {
     try {
-        const { phone } = req.query;
-        const data = await twilio.sendOtp(phone)
+        const { email } = req.query;
+        const otp = Math.floor(1000 + Math.random() * 9000)
+        const otpM = new otpModel({ userid: email, otp })
+        await otpM.save()
+        const data = await twilio.sendOtp(email, otp)
         console.log(data)
         res.status(200).json({ message: "otp send successfully" })
     } catch (error) {
@@ -67,5 +68,17 @@ exports.forgotPassword = async (req, res) => {
         res.status(202).json({ message: "password updated" })
     } catch (error) {
 
+    }
+}
+
+exports.googleLogin = async (req, res) => {
+    try {
+        const { email, name } = req.body
+        if (!email || !name) return res.status(401)
+        const user = new userModel({ email, fullname: name })
+        await user.save()
+        res.status(201).json({ message: "user create" })
+    } catch (error) {
+        console.log(error)
     }
 }

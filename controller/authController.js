@@ -50,6 +50,13 @@ exports.sendOtp = async (req, res) => {
     try {
         const { email } = req.query;
         const otp = Math.floor(1000 + Math.random() * 9000)
+        const found = await otpModel.findOne({ userid: email })
+        if (found) {
+            found.otp = otp;
+            const data = await twilio.sendOtp(email, otp)
+            await found.save()
+            return res.status(200).json({ message: 'otp send successfully' })
+        }
         const otpM = new otpModel({ userid: email, otp })
         await otpM.save()
         const data = await twilio.sendOtp(email, otp)

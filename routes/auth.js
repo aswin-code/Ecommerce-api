@@ -8,7 +8,7 @@ router.post('/login', authController.login)
 router.route('/otp')
     .get(authController.sendOtp)
     .post(authController.verifyotp)
-router.route('/google').post()
+router.route('/google').post(authController.googleLogin)
 router.route('/password')
     .post(authController.forgotPassword)
 module.exports = router 

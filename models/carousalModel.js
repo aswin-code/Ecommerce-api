@@ -5,7 +5,7 @@ const carousalSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'category'
     },
-    offer: [String]
+    offer: String
 });
 
 const carousalModel = mongoose.model('carousal', carousalSchema);

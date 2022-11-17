@@ -12,10 +12,16 @@ exports.getAllCarosuals = async (req, res) => {
 }
 
 exports.createCarousal = async (req, res) => {
-    const { offer } = req.body
-    const image = req.file.filename
-    const newCarousal = new carousalModel({
-        offer,
-        image
-    })
+    try {
+        const { offer } = req.body
+        const image = req.file.filename
+        const newCarousal = new carousalModel({
+            offer,
+            image
+        })
+        await newCarousal.save()
+        res.status(201).json({ message: 'carousal added successfully' })
+    } catch (error) {
+
+    }
 }

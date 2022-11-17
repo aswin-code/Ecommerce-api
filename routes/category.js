@@ -1,10 +1,10 @@
 const express = require('express')
 const router = express.Router()
-const carousalController = require('../controller/carousalController')
+const categoryController = require('../controller/categoryController')
 const multer = require('multer')
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "uploads/carousals");
+        cb(null, "uploads/category");
     },
     filename: (req, file, cb) => {
         const ext = file.mimetype.split("/")[1];
@@ -12,10 +12,8 @@ const storage = multer.diskStorage({
     },
 })
 const upload = multer({ storage })
+
 router.route('/')
-    .get(carousalController.getAllCarosuals)
-    .post(upload.single('carousal'), carousalController.createCarousal)
-// router.route('/:id')
-//     .get(userController.getAuser)
-//     .patch(userController.updateUser)
+    .get(categoryController.getAllCategory)
+    .post(upload('category'), categoryController.createCategory)
 module.exports = router

@@ -22,7 +22,8 @@ exports.createProducts = async (req, res) => {
 }
 exports.getAProducts = async (req, res) => {
     try {
-
+        const product = await productModel.findById(req.params.id)
+        res.status(200).json(product)
     } catch (error) {
 
     }

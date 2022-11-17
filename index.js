@@ -23,7 +23,7 @@ app.use(express.static('uploads'))
 app.use('/api/v1/auth', authRoute)
 app.use('/api/v1/users', userRoute)
 app.use('/api/v1/carousal', carousalRoute)
-app.use('/api/v1/cateogry', categoryRoute)
+app.use('/api/v1/category', categoryRoute)
 
 
 // app.use('/api/v1/products')

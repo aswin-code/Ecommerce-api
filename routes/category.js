@@ -15,5 +15,5 @@ const upload = multer({ storage })
 
 router.route('/')
     .get(categoryController.getAllCategory)
-    .post(upload('category'), categoryController.createCategory)
+    .post(upload.single('category'), categoryController.createCategory)
 module.exports = router

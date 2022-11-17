@@ -10,7 +10,7 @@ exports.getAllCategory = async (req, res) => {
 }
 exports.createCategory = async (req, res) => {
     try {
-        const image = req?.files?.filename
+        const image = req?.file?.filename
         const name = req.body.category
         const newCategory = new categoryModel({ image, name })
         await newCategory.save()

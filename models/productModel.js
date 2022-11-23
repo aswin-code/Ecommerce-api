@@ -11,7 +11,8 @@ const productSchema = mongoose.Schema({
         type: mongoose
             .Schema.Types.ObjectId,
         ref: 'category'
-    }
+    },
+    rating: String
 })
 
 const productModel = mongoose.model('products', productSchema)

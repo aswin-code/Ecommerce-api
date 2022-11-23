@@ -8,15 +8,15 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
         const ext = file.mimetype.split("/")[1];
-        cb(null, `${file.fieldname}-${Date.now()}.${ext}`);
+        cb(null, `${Math.floor(Math.random() * 1000)}${file.fieldname}-${Date.now()}.${ext}`);
     },
 })
 const upload = multer({ storage })
 
 router.route('/')
     .get(productController.getAllProducts)
-    .post(upload.array('images', 3), productController.createProducts)
-// router.route('/:id')
-//     .get(userController.getAuser)
+    .post(upload.array('images', 5), productController.createProducts)
+router.route('/:id')
+    .get(productController.getAProducts)
 //     .patch(userController.updateUser)
 module.exports = router

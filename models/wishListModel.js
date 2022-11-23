@@ -7,3 +7,7 @@ const wishlistSchema = mongoose.Schema({
     },
     products: [mongoose.Schema.Types.ObjectId]
 })
+
+const wishlistModel = mongoose.model('wishlist', wishlistSchema)
+
+module.exports = wishlistModel

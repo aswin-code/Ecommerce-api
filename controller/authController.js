@@ -3,6 +3,7 @@ const twilio = require('../utils/twilio')
 const bcrypt = require('bcrypt')
 const nodemailer = require('nodemailer')
 const otpModel = require('../models/otp')
+const jwt = require('../utils/Token')
 
 
 exports.signup = async (req, res) => {
@@ -12,7 +13,15 @@ exports.signup = async (req, res) => {
         if (olduser) return resStatus(400).json({ message: "user already exist" })
         const newUser = new userModel({ email, password, phone, fullname })
         await newUser.save();
-        res.status(201).json(newUser)
+        const accessToken = jwt.createAccessToken(newUser._id)
+        const refreshToken = jwt.createRefreshToken(newUser._id)
+        await userModel.findByIdAndUpdate(newUser._id, { $push: { refreshToken } })
+        res.status(201).cookie('jwt', refreshToken, {
+            maxAge: 7 * 24 * 60 * 1000,
+            httpOnly: true,
+            secure: true
+        }).json(accessToken)
+
     } catch (error) {
         console.log(error)
     }
@@ -26,7 +35,14 @@ exports.login = async (req, res) => {
         if (!user) return res.status(401).json({ message: "invaild username or password" })
         const result = await bcrypt.compare(password, user.password)
         if (!result) return res.status(401).json({ message: "invaild username or password" })
-        res.status(200).json(user)
+        const accessToken = jwt.createAccessToken(user._id)
+        const refreshToken = jwt.createRefreshToken(user._id)
+        await userModel.findByIdAndUpdate(user._id, { $push: { refreshToken } })
+        res.status(200).cookie('jwt', refreshToken, {
+            maxAge: 7 * 24 * 60 * 1000,
+            httpOnly: true,
+            secure: true
+        }).json(accessToken)
     } catch (error) {
         console.log(error)
     }
@@ -89,3 +105,52 @@ exports.googleLogin = async (req, res) => {
         console.log(error)
     }
 }
+exports.refresh = asyncHandler(async (req, res) => {
+
+    const cookie = req.cookies;
+    console.log(cookie)
+
+    if (!cookie) return res.status(401).json({ message: "Unauthorized" })
+
+    const refreshToken = cookie.jwt;
+    const foundUser = await userModel.findOne({ refreshToken: refreshToken }).exec();
+    console.log(foundUser)
+    if (!foundUser) {
+        console.log('working')
+        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, asyncHandler(async (err, decoded) => {
+
+            if (err) {
+                console.log(err)
+                return res.status(403);
+            }
+            const hacked = await userModel.findById(decoded.user).exec();
+            hacked.refreshToken = [];
+            await hacked.save()
+            return res.status(403).json({ message: 'forbidden' })
+        }))
+        return
+    }
+    console.log(foundUser)
+    const newArray = foundUser.refreshToken.filter(e => e !== refreshToken)
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, asyncHandler(async (err, decoded) => {
+        if (err) {
+
+            foundUser.refreshToken = newArray
+            await foundUser.save();
+            console.log('err')
+            return res.status(403).json({ message: 'forbidden' })
+        }
+        const newRefreshToken = token.createRefreshToken(foundUser._id)
+
+        const accessToken = token.createAccessToken(foundUser._id)
+        foundUser.refreshToken = [...newArray, newRefreshToken]
+        await foundUser.save();
+        res.cookie('jwt', newRefreshToken, {
+            // httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        }).json({ accessToken })
+    }))
+
+})

@@ -4,7 +4,8 @@ const userSchema = mongoose.Schema({
     fullname: String,
     email: String,
     password: String,
-    phone: String
+    phone: String,
+    refreshToken: [String]
 })
 userSchema.pre('save', async function (next) {
     try {

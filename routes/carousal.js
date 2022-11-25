@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const carousalController = require('../controller/carousalController')
 const multer = require('multer')
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, "uploads/carousals");
@@ -12,6 +13,7 @@ const storage = multer.diskStorage({
     },
 })
 const upload = multer({ storage })
+
 router.route('/')
     .get(carousalController.getAllCarosuals)
     .post(upload.single('carousal'), carousalController.createCarousal)

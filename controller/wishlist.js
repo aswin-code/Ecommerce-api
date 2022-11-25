@@ -2,8 +2,7 @@ const wishlistModel = require('../models/wishListModel')
 
 exports.getWishlist = async (req, res) => {
     try {
-        if (!req?.body?.userId) return res.status(403).json({ message: 'unauthorized' })
-        const wishlist = await wishlistModel.findOne({ userId: req.body.userId })
+        const wishlist = await wishlistModel.findOne({ userId: req.user })
         res.status(200).json(wishlist)
     } catch (error) {
         res.status(500).json({ message: error.message })
@@ -13,10 +12,10 @@ exports.getWishlist = async (req, res) => {
 
 exports.AddAndRemoveWishlist = async (req, res) => {
     try {
-        if (req?.body?.userId) return res.status(403).json({ message: 'unauthorized' })
+        if (req?.body?.product) return res.status(400).json({ message: 'all fields required' })
         const found = await wishlistModel.findOne({ userId: req.body.userId })
         if (!found) {
-            const newWishlist = new wishlistModel({ userId: req.body.userId, products: req.body.product })
+            const newWishlist = new wishlistModel({ userId: req.user, products: req.body.product })
             await newWishlist.save()
             return res.status(201).json({ message: 'product added to wishlist' })
         }

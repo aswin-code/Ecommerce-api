@@ -15,12 +15,12 @@ exports.AddAndRemoveWishlist = async (req, res) => {
         if (!req?.body?.product) return res.status(400).json({ message: 'all fields required' })
         const found = await wishlistModel.findOne({ userId: req.user })
         if (!found) {
-            const newWishlist = new wishlistModel({ userId: req.user, products: { product: req.body.product } })
+            const newWishlist = new wishlistModel({ userId: req.user, products: [{ product: req.body.product }] })
             await newWishlist.save()
             return res.status(201).json({ message: 'product added to wishlist' })
         }
         if (!found.products.find(e => e.product == req.body.product)) {
-            await wishlistModel.findByIdAndUpdate(found._id, { $push: { proucts: { product: req.body.product } } })
+            await wishlistModel.findByIdAndUpdate(found._id, { $push: { products: { product: req.body.product } } })
 
             return res.status(201).json({ message: 'product added to wishlist' })
         }

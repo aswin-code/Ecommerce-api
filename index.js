@@ -13,6 +13,7 @@ const carousalRoute = require('./routes/carousal')
 const categoryRoute = require('./routes/category')
 const productRoute = require('./routes/product')
 const WishlistRoute = require('./routes/wishlist')
+const cartRoute = require('./routes/cart')
 const port = process.env.PORT || 5000;
 const connectionString = process.env.DB_CONNECTION_STRING
 
@@ -28,6 +29,7 @@ app.use('/api/v1/carousal', verifyJWT, carousalRoute)
 app.use('/api/v1/category', verifyJWT, categoryRoute)
 app.use('/api/v1/products', verifyJWT, productRoute)
 app.use('/api/v1/wishlist', verifyJWT, WishlistRoute)
+app.use('api/v1/cart', verifyJWT, cartRoute)
 
 
 

@@ -16,11 +16,7 @@ exports.signup = async (req, res) => {
         const accessToken = jwt.createAccessToken(newUser._id)
         const refreshToken = jwt.createRefreshToken(newUser._id)
         await userModel.findByIdAndUpdate(newUser._id, { $push: { refreshToken } })
-        res.status(201).cookie('jwt', refreshToken, {
-            maxAge: 7 * 24 * 60 * 1000,
-            httpOnly: true,
-            secure: true
-        }).json(accessToken)
+        res.status(201).json(refreshToken, accessToken)
 
     } catch (error) {
         console.log(error)
@@ -38,11 +34,7 @@ exports.login = async (req, res) => {
         const accessToken = jwt.createAccessToken(user._id)
         const refreshToken = jwt.createRefreshToken(user._id)
         await userModel.findByIdAndUpdate(user._id, { $push: { refreshToken } })
-        res.status(200).cookie('jwt', refreshToken, {
-            maxAge: 7 * 24 * 60 * 1000,
-            httpOnly: true,
-            secure: true
-        }).json(accessToken)
+        res.status(200).json(refreshToken, accessToken)
     } catch (error) {
         console.log(error)
     }
@@ -107,12 +99,12 @@ exports.googleLogin = async (req, res) => {
 }
 exports.refresh = asyncHandler(async (req, res) => {
 
-    const cookie = req.cookies;
+    const cookie = req.headers.refresh;
     console.log(cookie)
 
     if (!cookie) return res.status(401).json({ message: "Unauthorized" })
 
-    const refreshToken = cookie.jwt;
+    const refreshToken = cookie.split(' ')[1]
     const foundUser = await userModel.findOne({ refreshToken: refreshToken }).exec();
     console.log(foundUser)
     if (!foundUser) {

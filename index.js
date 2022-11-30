@@ -23,7 +23,7 @@ app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(express.static('uploads'))
 app.use('/api/v1/auth', authRoute)
-app.use('/api/v1/users', verifyJWT, userRoute)
+app.use('/api/v1/users', userRoute)
 app.use('/api/v1/carousal', verifyJWT, carousalRoute)
 app.use('/api/v1/category', verifyJWT, categoryRoute)
 app.use('/api/v1/products', verifyJWT, productRoute)

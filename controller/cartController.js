@@ -1,4 +1,6 @@
+const { renderSync } = require('sass')
 const cartModel = require('../models/cartModel')
+const productModel = require('../models/productModel')
 
 exports.getACart = async (req, res) => {
     try {
@@ -9,22 +11,45 @@ exports.getACart = async (req, res) => {
         res.status(500).json({ message: 'someting went wrong' })
     }
 }
-exports.AddRemoveCart = async (req, res) => {
+exports.AddCart = async (req, res) => {
     try {
-        const { product } = req.body?.product
+
+        const { product, qty, size } = req.body
         if (!product) return res.status(400).json({ message: 'all fields require' })
         const found = await cartModel.findOne({ userid: req.user })
+        const productDetails = await productModel.findById(product)
+        const price = productDetails.price * qty
         if (!found) {
-            const newCart = new cartModel({ userid: req.user, proudcts: [{ product }] })
+            const newCart = new cartModel({ userid: req.user, proudcts: [{ product, qty, size, price }], totalPrice: price })
             await newCart.save()
             return res.status(201).json({ message: 'product added to cart successfully' })
         }
-        if (!found.products.find(e => e.product == product)) {
-            await cartModel.findByIdAndUpdate(found._id, { $push: { products: { product } } })
+        if (!found.products.find(e => e.product == product && e.size == size)) {
+            await cartModel.findByIdAndUpdate(found._id, { $push: { products: { product, qty, size, price } } })
+            await cartModel.findByIdAndUpdate(found._id, { $inc: { totalPrice: price } })
             return res.status(201).json({ message: 'product added to cart successfully' })
         }
-        await cartModel.findByIdAndUpdate(found._id, { $pull: { products: { product } } })
-        return res.status(201).json({ message: 'product removed from cart successfully' })
+        await cartModel.updateOne({ 'products.product': product }, { '$inc': { 'products.$.qty': qty, 'products.$.price': price } })
+        await cartModel.findByIdAndUpdate(found._id, { $inc: { totalPrice: price } })
+        res.status(201).json({ message: 'cart updated successfully' })
+
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: 'someting went wrong' })
+    }
+}
+
+exports.removeFromCart = async (req, res) => {
+    try {
+        const { product } = req.body
+        if (!product) return res.status(400).json({ message: 'all fields require' })
+        const cart = await cartModel.findOne({ userid: req.user })
+        const productDetail = cart.products.filter(e => e.product == product)
+        const price = productDetail[0].price * -1
+        await cartModel.findOneAndUpdate({ userid: req.user }, { $pull: { products: { product } } })
+        await cartModel.findByIdAndUpdate(cart._id, { $inc: { totalPrice: price } })
+        res.status(201).json({ message: 'item removed from cart' })
     } catch (error) {
         console.log(error)
         res.status(500).json({ message: 'someting went wrong' })

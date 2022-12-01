@@ -9,8 +9,12 @@ const cartSchema = mongoose.Schema({
         product: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'products'
-        }
-    }]
+        },
+        size: String,
+        qty: Number,
+        price: Number,
+    }],
+    totalPrice: Number
 })
 
 const cartModel = mongoose.model('cart', cartSchema)

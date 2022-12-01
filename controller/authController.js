@@ -3,7 +3,10 @@ const twilio = require('../utils/twilio')
 const bcrypt = require('bcrypt')
 const nodemailer = require('nodemailer')
 const otpModel = require('../models/otp')
+const JWT = require('jsonwebtoken')
 const jwt = require('../utils/Token')
+const asyncHandler = require('express-async-handler')
+
 
 
 exports.signup = async (req, res) => {
@@ -16,7 +19,7 @@ exports.signup = async (req, res) => {
         const accessToken = jwt.createAccessToken(newUser._id)
         const refreshToken = jwt.createRefreshToken(newUser._id)
         await userModel.findByIdAndUpdate(newUser._id, { $push: { refreshToken } })
-        res.status(201).json(refreshToken, accessToken)
+        res.status(201).json({ refreshToken, accessToken })
 
     } catch (error) {
         console.log(error)
@@ -34,7 +37,7 @@ exports.login = async (req, res) => {
         const accessToken = jwt.createAccessToken(user._id)
         const refreshToken = jwt.createRefreshToken(user._id)
         await userModel.findByIdAndUpdate(user._id, { $push: { refreshToken } })
-        res.status(200).json(refreshToken, accessToken)
+        res.status(200).json({ refreshToken, accessToken })
     } catch (error) {
         console.log(error)
     }
@@ -109,7 +112,7 @@ exports.refresh = asyncHandler(async (req, res) => {
     console.log(foundUser)
     if (!foundUser) {
         console.log('working')
-        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, asyncHandler(async (err, decoded) => {
+        JWT.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, asyncHandler(async (err, decoded) => {
 
             if (err) {
                 console.log(err)
@@ -124,7 +127,7 @@ exports.refresh = asyncHandler(async (req, res) => {
     }
     console.log(foundUser)
     const newArray = foundUser.refreshToken.filter(e => e !== refreshToken)
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, asyncHandler(async (err, decoded) => {
+    JWT.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, asyncHandler(async (err, decoded) => {
         if (err) {
 
             foundUser.refreshToken = newArray
@@ -137,12 +140,7 @@ exports.refresh = asyncHandler(async (req, res) => {
         const accessToken = token.createAccessToken(foundUser._id)
         foundUser.refreshToken = [...newArray, newRefreshToken]
         await foundUser.save();
-        res.cookie('jwt', newRefreshToken, {
-            // httpOnly: true,
-            secure: true,
-            sameSite: 'none',
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        }).json({ accessToken })
+        res.json({ refreshToken: newRefreshToken, accessToken })
     }))
 
 })

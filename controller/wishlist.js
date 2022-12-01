@@ -25,7 +25,7 @@ exports.AddAndRemoveWishlist = async (req, res) => {
             return res.status(201).json({ message: 'product added to wishlist' })
         }
         await wishlistModel.findByIdAndUpdate(found._id, { $pull: { products: { product: req.body.product } } })
-        return res.status(204).json({ message: 'product remove from wishlist' })
+        return res.status(204).json({ message: 'product removed from wishlist' })
     } catch (error) {
         res.status(500).json({ message: error.message })
     }

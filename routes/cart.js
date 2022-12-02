@@ -3,5 +3,6 @@ const cartController = require('../controller/cartController')
 
 router.route('/')
     .get(cartController.getACart)
-    .post(cartController.AddRemoveCart)
+    .post(cartController.AddCart)
+    .patch(cartController.removeFromCart)
 module.exports = router

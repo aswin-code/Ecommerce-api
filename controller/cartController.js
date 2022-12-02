@@ -1,4 +1,3 @@
-const { renderSync } = require('sass')
 const cartModel = require('../models/cartModel')
 const productModel = require('../models/productModel')
 
@@ -19,18 +18,19 @@ exports.AddCart = async (req, res) => {
         const found = await cartModel.findOne({ userid: req.user })
         const productDetails = await productModel.findById(product)
         const price = productDetails.price * qty
+        const discountPrice = productDetails.discountPrice * qty
         if (!found) {
-            const newCart = new cartModel({ userid: req.user, proudcts: [{ product, qty, size, price }], totalPrice: price })
+            const newCart = new cartModel({ userid: req.user, proudcts: [{ product, qty, size, price, discountPrice }], totalPrice: price, totalPrice: discountPrice })
             await newCart.save()
             return res.status(201).json({ message: 'product added to cart successfully' })
         }
         if (!found.products.find(e => e.product == product && e.size == size)) {
-            await cartModel.findByIdAndUpdate(found._id, { $push: { products: { product, qty, size, price } } })
-            await cartModel.findByIdAndUpdate(found._id, { $inc: { totalPrice: price } })
+            await cartModel.findByIdAndUpdate(found._id, { $push: { products: { product, qty, size, price, discountPrice } } })
+            await cartModel.findByIdAndUpdate(found._id, { $inc: { totalPrice: price, totalPrice: discountPrice } })
             return res.status(201).json({ message: 'product added to cart successfully' })
         }
-        await cartModel.updateOne({ 'products.product': product }, { '$inc': { 'products.$.qty': qty, 'products.$.price': price } })
-        await cartModel.findByIdAndUpdate(found._id, { $inc: { totalPrice: price } })
+        await cartModel.updateOne({ 'products.product': product }, { '$inc': { 'products.$.qty': qty, 'products.$.price': price, 'products.$.discountPrice': discountPrice } })
+        await cartModel.findByIdAndUpdate(found._id, { $inc: { totalPrice: price, totalPrice: discountPrice } })
         res.status(201).json({ message: 'cart updated successfully' })
 
 

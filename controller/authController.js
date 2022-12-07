@@ -135,9 +135,9 @@ exports.refresh = asyncHandler(async (req, res) => {
             console.log('err')
             return res.status(403).json({ message: 'forbidden' })
         }
-        const newRefreshToken = token.createRefreshToken(foundUser._id)
+        const newRefreshToken = jwt.createRefreshToken(foundUser._id)
 
-        const accessToken = token.createAccessToken(foundUser._id)
+        const accessToken = jwt.createAccessToken(foundUser._id)
         foundUser.refreshToken = [...newArray, newRefreshToken]
         await foundUser.save();
         res.json({ refreshToken: newRefreshToken, accessToken })

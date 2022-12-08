@@ -2,7 +2,7 @@ const wishlistModel = require('../models/wishListModel')
 
 exports.getWishlist = async (req, res) => {
     try {
-        const wishlist = await wishlistModel.findOne({ userId: req.user })
+        const wishlist = await wishlistModel.findOne({ userId: req.user }).populate('products.product')
         res.status(200).json(wishlist)
     } catch (error) {
         res.status(500).json({ message: error.message })

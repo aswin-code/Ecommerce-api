@@ -13,8 +13,10 @@ exports.signup = async (req, res) => {
     const { email, password, phone, fullname } = req.body
     try {
         const olduser = await userModel.findOne({ email })
-        if (olduser) return resStatus(400).json({ message: "user already exist" })
-        const newUser = new userModel({ email, password, phone, fullname })
+        if (olduser) return res.status(400).json({ message: "user already exist" })
+        if (!email || !password || !phone || !fullname) return res.status(400).json({ message: 'all fields required' })
+        const hash = await bcrypt.hash(password, 10)
+        const newUser = new userModel({ email, password: hash, phone, fullname })
         await newUser.save();
         const accessToken = jwt.createAccessToken(newUser._id)
         const refreshToken = jwt.createRefreshToken(newUser._id)
@@ -30,10 +32,11 @@ exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
+        if (!email || !password) return res.status(400).json({ message: 'all fields requied' })
         const user = await userModel.findOne({ email })
-        if (!user) return res.status(401).json({ message: "invaild username or password" })
+        if (!user) return res.status(401).json({ message: "invaild username " })
         const result = await bcrypt.compare(password, user.password)
-        if (!result) return res.status(401).json({ message: "invaild username or password" })
+        if (!result) return res.status(401).json({ message: "invaild password" })
         const accessToken = jwt.createAccessToken(user._id)
         const refreshToken = jwt.createRefreshToken(user._id)
         await userModel.findByIdAndUpdate(user._id, { $push: { refreshToken } })
@@ -46,6 +49,7 @@ exports.login = async (req, res) => {
 exports.verifyotp = async (req, res) => {
     try {
         const { otp, email } = req.body
+        if (!otp || !email) return res.status(400).json({ message: 'all fields required' })
         const found = await otpModel.findOne({ userid: email })
         if (!found) return res.status(401).json({ message: 'something went wrong' })
         if (found.otp !== otp) return res.status(401).json({ message: 'invalid otp' });
@@ -60,6 +64,7 @@ exports.verifyotp = async (req, res) => {
 exports.sendOtp = async (req, res) => {
     try {
         const { email } = req.query;
+        if (!email) return res.status(400).json({ message: 'email required' })
         const otp = Math.floor(1000 + Math.random() * 9000)
         const found = await otpModel.findOne({ userid: email })
         if (found) {
@@ -80,6 +85,7 @@ exports.sendOtp = async (req, res) => {
 exports.forgotPassword = async (req, res) => {
     try {
         const { email, password } = req.body;
+        if (!email || !password) return res.status(400).json({ message: 'all fields required' })
         const user = await userModel.findOne({ email: email })
         user.password = password
         await user.save()

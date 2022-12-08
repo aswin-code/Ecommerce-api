@@ -7,15 +7,6 @@ const userSchema = mongoose.Schema({
     phone: String,
     refreshToken: [String]
 })
-userSchema.pre('save', async function (next) {
-    try {
-        const hash = await bcrypt.hash(this.password, 10)
-        this.password = hash
-        next();
-    } catch (error) {
-        console.log(error)
-    }
-})
 
 const userModel = mongoose.model('users', userSchema)
 

@@ -35,7 +35,7 @@ exports.updateAddress = async (req, res) => {
     try {
         const { title, fullName, phone, pin, state, place, address, landMark } = req.body
         if (!title || !fullName || !phone || !pin || !state || !place || !address || !landMark) return res.status(400).json({ message: 'all fields required' })
-        await addressModel.findByIdAndUpdate(res.params.addId, { $set: req.body })
+        await addressModel.findByIdAndUpdate(req.params.addId, { $set: req.body })
         res.status(202).json({ message: 'address updated successfully' })
 
     } catch (error) {

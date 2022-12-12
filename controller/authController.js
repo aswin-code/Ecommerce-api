@@ -109,17 +109,12 @@ exports.googleLogin = async (req, res) => {
 exports.refresh = asyncHandler(async (req, res) => {
 
     const cookie = req.headers.refresh;
-    console.log(cookie)
-
     if (!cookie) return res.status(401).json({ message: "Unauthorized" })
-
     const refreshToken = cookie.split(' ')[1]
     const foundUser = await userModel.findOne({ refreshToken: refreshToken }).exec();
-    console.log(foundUser)
     if (!foundUser) {
-        console.log('working')
-        JWT.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, asyncHandler(async (err, decoded) => {
 
+        JWT.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, asyncHandler(async (err, decoded) => {
             if (err) {
                 console.log(err)
                 return res.status(403);
@@ -131,14 +126,12 @@ exports.refresh = asyncHandler(async (req, res) => {
         }))
         return
     }
-    console.log(foundUser)
     const newArray = foundUser.refreshToken.filter(e => e !== refreshToken)
     JWT.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, asyncHandler(async (err, decoded) => {
         if (err) {
 
             foundUser.refreshToken = newArray
             await foundUser.save();
-            console.log('err')
             return res.status(403).json({ message: 'forbidden' })
         }
         const newRefreshToken = jwt.createRefreshToken(foundUser._id)

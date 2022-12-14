@@ -15,6 +15,7 @@ const productRoute = require('./routes/product')
 const WishlistRoute = require('./routes/wishlist')
 const cartRoute = require('./routes/cart')
 const addressRoute = require('./routes/address')
+const orderRoute = require('./routes/orders')
 const port = process.env.PORT || 5000;
 const connectionString = process.env.DB_CONNECTION_STRING
 
@@ -32,6 +33,7 @@ app.use('/api/v1/products', verifyJWT, productRoute)
 app.use('/api/v1/wishlist', verifyJWT, WishlistRoute)
 app.use('/api/v1/address', verifyJWT, addressRoute)
 app.use('/api/v1/cart', verifyJWT, cartRoute)
+app.use('/api/v1/orders', verifyJWT, orderRoute)
 
 
 

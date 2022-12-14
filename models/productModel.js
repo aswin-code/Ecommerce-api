@@ -12,7 +12,8 @@ const productSchema = mongoose.Schema({
             .Schema.Types.ObjectId,
         ref: 'category'
     },
-    rating: String
+    rating: String,
+    deliveryFee: String,
 })
 
 const productModel = mongoose.model('products', productSchema)

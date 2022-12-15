@@ -61,8 +61,8 @@ exports.removeFromCart = async (req, res) => {
 }
 exports.getSingleProduct = async (req, res) => {
     try {
-        const cart = await cartModel.findById(req.param.cartid).populate({ path: 'products', populate: 'product' })
-        const product = cart.products.filter(e => product._id == req.param.id)
+        const cart = await cartModel.findById(req.params.cartid).populate({ path: 'products', populate: 'product' })
+        const product = cart.products.filter(e => product._id == req.params.id)
         res.status(200).json(product)
     } catch (error) {
         console.log(error)

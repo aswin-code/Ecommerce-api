@@ -24,7 +24,7 @@ exports.createOrder = async (req, res) => {
             address,
             landMark } = await addressModel.findById(addressId)
         let orderDate = new Date()
-        let deliveryDate = orderDate.setDate(orderDate.getDate() + 3)
+        let deliveryDate = orderDate
         const totalItem = cart.products.reduce((crr, acc) => {
             return acc + crr.qty
         }, 0)
@@ -44,7 +44,7 @@ exports.createOrder = async (req, res) => {
                 address,
                 landMark,
                 orderDate: orderDate.toLocaleDateString(),
-                deliveryDate
+                deliveryDate: deliveryDate.setDate(orderDate.getDate() + 3)
             })
             console.log(newOrder)
             await newOrder.save()

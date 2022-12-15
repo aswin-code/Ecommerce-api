@@ -16,7 +16,7 @@ exports.createOrder = async (req, res) => {
         if (!addressId || !paymentType) return res.status(400).json({ message: 'all fields required' })
 
         const cart = await cartModel.findOne({ userid: req.user })
-        const orderProducts = cart.products.filter(product => cart.products.find(e => e.id == product._id))
+        const orderProducts = cart.products.filter(product => products.find(e => e.id == product._id))
         console.log(orderProducts)
         // const order = {
         //     products: orderProducts.products,

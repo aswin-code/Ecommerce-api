@@ -24,7 +24,8 @@ exports.createOrder = async (req, res) => {
             address,
             landMark } = await addressModel.findById(addressId)
         let orderDate = new Date()
-        let deliveryDate = orderDate
+        let deliveryDate = new Date()
+        deliveryDate.setDate(orderDate.getDate() + 3)
         const totalItem = cart.products.reduce((crr, acc) => {
             return acc + crr.qty
         }, 0)
@@ -44,7 +45,7 @@ exports.createOrder = async (req, res) => {
                 address,
                 landMark,
                 orderDate: orderDate,
-                deliveryDate: deliveryDate.setDate(orderDate.getDate() + 3)
+                deliveryDate
             })
             console.log(newOrder)
             await newOrder.save()

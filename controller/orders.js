@@ -12,73 +12,79 @@ exports.getAllOrders = async (req, res) => {
 }
 exports.createOrder = async (req, res) => {
     try {
-        const { addressId, paymentType } = req.body
+        const { addressId, paymentType, products } = req.body
         if (!addressId || !paymentType) return res.status(400).json({ message: 'all fields required' })
 
         const cart = await cartModel.findOne({ userid: req.user })
-        const { fullName,
-            phone,
-            pin,
-            state,
-            place,
-            address,
-            landMark } = await addressModel.findById(addressId)
-        let orderDate = new Date()
-        let deliveryDate = new Date()
-        deliveryDate.setDate(orderDate.getDate() + 3)
-        const totalItem = cart.products.reduce((crr, acc) => {
-            return acc + crr.qty
-        }, 0)
-        if (paymentType === "COD") {
-            const newOrder = new orderModel({
-                userid: req.user,
-                products: cart.products,
-                totalPrice: cart.totalPrice,
-                discountPrice: cart.discountPrice,
-                paymentType,
-                orderStatus: "confirmed",
-                fullName,
-                phone,
-                pin,
-                state,
-                place,
-                address,
-                landMark,
-                orderDate: orderDate,
-                deliveryDate,
-                totalItem,
-                totalDiscount: cart.totalDiscount
-            })
-            console.log(newOrder)
-            await newOrder.save()
-            return res.status(201).json({ message: 'order placed successfully' })
+        const orderProducts = cart.products.filter(product => cart.products.find(e => e.id == product._id))
+        console.log(orderProducts)
+        // const order = {
+        //     products: orderProducts.products,
+        //     totalPrice: orderProducts.totalPrice,
+        // }
+        // const { fullName,
+        //     phone,
+        //     pin,
+        //     state,
+        //     place,
+        //     address,
+        //     landMark } = await addressModel.findById(addressId)
+        // let orderDate = new Date()
+        // let deliveryDate = new Date()
+        // deliveryDate.setDate(orderDate.getDate() + 3)
+        // const totalItem = cart.products.reduce((crr, acc) => {
+        //     return acc + crr.qty
+        // }, 0)
+        // if (paymentType === "COD") {
+        //     const newOrder = new orderModel({
+        //         userid: req.user,
+        //         products: orderProducts.products,
+        //         discountPrice: orderProducts.discountPrice,
+        //         paymentType,
+        //         orderStatus: "confirmed",
+        //         fullName,
+        //         phone,
+        //         pin,
+        //         state,
+        //         place,
+        //         address,
+        //         landMark,
+        //         orderDate: orderDate,
+        //         deliveryDate,
+        //         totalItem,
+        //         totalPrice: orderProducts.totalPrice,
+        //         totalDiscount: cart.totalDiscount
+        //     })
+        //     console.log(newOrder)
+        //     await newOrder.save()
+        //     return res.status(201).json({ message: 'order placed successfully' })
 
-        } else if (paymentType === "ONLINE_PAYMENT") {
-            const newOrder = new orderModel({
-                userid: req.user,
-                products: cart.products,
-                totalPrice: cart.totalPrice,
-                discountPrice: cart.discountPrice,
-                paymentType,
-                paymentStatus: true,
-                orderStatus: "confirmed",
-                fullName,
-                phone,
-                pin,
-                state,
-                place,
-                address,
-                landMark,
-                orderDate: orderDate,
-                deliveryDate,
-                totalItem,
-                totalDiscount: cart.totalDiscount
-            })
-            console.log(newOrder)
-            await newOrder.save()
-            return res.status(201).json({ message: 'order placed successfully' })
+        // } else if (paymentType === "ONLINE_PAYMENT") {
+        //     const newOrder = new orderModel({
+        //         userid: req.user,
+        //         products: cart.products,
+        //         totalPrice: cart.totalPrice,
+        //         discountPrice: cart.discountPrice,
+        //         paymentType,
+        //         paymentStatus: true,
+        //         orderStatus: "confirmed",
+        //         fullName,
+        //         phone,
+        //         pin,
+        //         state,
+        //         place,
+        //         address,
+        //         landMark,
+        //         orderDate: orderDate,
+        //         deliveryDate,
+        //         totalItem,
+        //         totalDiscount: cart.totalDiscount
+        //     })
+        //     console.log(newOrder)
+        //     await newOrder.save()
+        //     return res.status(201).json({ message: 'order placed successfully' })
 
-        }
+        // }
 
     } catch (error) {
         console.log(error)

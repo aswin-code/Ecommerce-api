@@ -67,7 +67,7 @@ exports.createOrder = async (req, res) => {
                 place,
                 address,
                 landMark,
-                orderDate: orderDate.toLocaleDateString(),
+                orderDate: orderDate,
                 deliveryDate
             })
             console.log(newOrder)

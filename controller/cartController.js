@@ -14,9 +14,10 @@ exports.AddCart = async (req, res) => {
     try {
 
         const { product, qty, size } = req.body
-        if (!product) return res.status(400).json({ message: 'all fields require' })
+        if (!product || !qty || !size) return res.status(400).json({ message: 'all fields require' })
         const found = await cartModel.findOne({ userid: req.user })
         const productDetails = await productModel.findById(product)
+        if (!productDetails) return res.status(400).json({ message: "no product found" })
         const price = productDetails.price * qty
         const discountPrice = productDetails.discountPrice * qty
         const products = { product, qty, size, price, discountPrice }

@@ -45,7 +45,9 @@ exports.createOrder = async (req, res) => {
                 address,
                 landMark,
                 orderDate: orderDate,
-                deliveryDate
+                deliveryDate,
+                totalItem,
+                totalDiscount: cart.totalDiscount
             })
             console.log(newOrder)
             await newOrder.save()
@@ -68,7 +70,9 @@ exports.createOrder = async (req, res) => {
                 address,
                 landMark,
                 orderDate: orderDate,
-                deliveryDate
+                deliveryDate,
+                totalItem,
+                totalDiscount: cart.totalDiscount
             })
             console.log(newOrder)
             await newOrder.save()

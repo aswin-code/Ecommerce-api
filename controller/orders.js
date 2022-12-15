@@ -80,6 +80,7 @@ exports.createOrder = async (req, res) => {
         cart.products = await cart.products.filter(product => !(products.find(e => e.id == product._id)))
         cart.totalDiscount -= totalDiscount
         cart.totalPrice -= totalPrice
+        await cart.save()
         return res.status(201).json({ message: 'order placed successfully' })
 
     } catch (error) {

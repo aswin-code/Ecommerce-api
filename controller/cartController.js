@@ -48,7 +48,7 @@ exports.removeFromCart = async (req, res) => {
         if (!product) return res.status(400).json({ message: 'all fields require' })
         const cart = await cartModel.findOne({ userid: req.user }).populate({ path: 'products', populate: 'product' })
         if (!cart) return res.status(400).json({ message: 'bad request' })
-        const productDetail = cart.products.filter(e => e.product == product)
+        const productDetail = cart.products.filter(e => e.product._id == product)
         const price = productDetail[0].price * -1
         const discountPrice = productDetail[0].discountPrice * -1
         await cartModel.findByIdAndUpdate(cart._id, { $inc: { totalPrice: price, totalDiscount: discountPrice } })

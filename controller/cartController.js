@@ -59,3 +59,14 @@ exports.removeFromCart = async (req, res) => {
         res.status(500).json({ message: 'someting went wrong' })
     }
 }
+exports.getSingleProduct = async (req, res) => {
+    try {
+        const cart = await cartModel.findById(req.param.cartid).populate({ path: 'products', populate: 'product' })
+        const product = cart.products.filter(e => product._id == req.param.id)
+        res.status(200).json(product)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: error.message })
+
+    }
+}

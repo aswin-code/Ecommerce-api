@@ -15,7 +15,9 @@ exports.createOrder = async (req, res) => {
         const { addressId, paymentType, products } = req.body
         if (!addressId || !paymentType || !products.length) return res.status(400).json({ message: 'all fields required' })
         const cart = await cartModel.findOne({ userid: req.user })
+        if (!cart) return res.status(400).json({ message: 'no cart found' })
         const orderProducts = await cart.products.filter(product => products.find(e => e.id == product._id))
+        if (!orderProducts.length) return res.status(400).json({ message: 'product not found in cart' })
         const totalPrice = await orderProducts.reduce((acc, curr) => {
             return acc + curr.price
         }, 0)
@@ -35,8 +37,9 @@ exports.createOrder = async (req, res) => {
         const totalItem = cart.products.reduce((acc, curr) => {
             return acc + curr.qty
         }, 0)
+        let newOrder
         if (paymentType === "COD") {
-            const newOrder = new orderModel({
+            newOrder = new orderModel({
                 userid: req.user,
                 products: orderProducts,
                 paymentType,
@@ -56,7 +59,7 @@ exports.createOrder = async (req, res) => {
             })
             await newOrder.save()
         } else if (paymentType === "ONLINE_PAYMENT") {
-            const newOrder = new orderModel({
+            newOrder = new orderModel({
                 userid: req.user,
                 products: orderProducts,
                 paymentType,
@@ -81,7 +84,8 @@ exports.createOrder = async (req, res) => {
         cart.totalDiscount -= totalDiscount
         cart.totalPrice -= totalPrice
         await cart.save()
-        return res.status(201).json({ message: 'order placed successfully' })
+        const order = await orderModel.findById(newOrder._id).populate({ path: 'products', populate: 'product' })
+        return res.status(201).json({ message: 'order placed successfully', order })
 
     } catch (error) {
         console.log(error)

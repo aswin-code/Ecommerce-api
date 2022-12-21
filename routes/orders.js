@@ -6,6 +6,7 @@ router.route('/')
 
 router.route('/:orderId')
     .get(orderController.getAOrders)
+    .patch(orderController.cancelOrder)
 
 
 module.exports = router

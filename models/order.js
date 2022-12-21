@@ -32,6 +32,10 @@ const orderSchema = mongoose.Schema({
     orderDate: Date,
     deliveryDate: Date,
     deliveredDate: Date,
+    cancelDate: {
+        type: Date,
+        default: null
+    },
     totalPrice: Number,
     totalDiscount: Number,
     totalItems: Number,

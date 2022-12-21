@@ -106,6 +106,7 @@ exports.cancelOrder = async (req, res) => {
     try {
         const order = await orderModel.findById(req.params.orderId)
         if (!order) return res.status(400).json({ message: 'no order found' })
+        if (order.orderStatus == 'CANCELED') return res.status(400).json({ message: 'order already canceled' })
         const cancelDate = new Date()
         await orderModel.findByIdAndUpdate(req.params.orderId, { $set: { orderStatus: 'CANCELED', cancelDate } })
         res.status(200).json({ message: 'order canceled successfullly' })

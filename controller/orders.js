@@ -94,7 +94,7 @@ exports.createOrder = async (req, res) => {
 }
 exports.getAOrders = async (req, res) => {
     try {
-        const order = await orderModel.findById(req.param.orderId).populate({ path: 'products', populate: 'product' })
+        const order = await orderModel.findById(req.params.orderId).populate({ path: 'products', populate: 'product' })
         res.status(200).json(order)
 
     } catch (error) {

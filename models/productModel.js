@@ -14,6 +14,7 @@ const productSchema = mongoose.Schema({
     },
     rating: String,
     deliveryFee: String,
+    description: String
 })
 
 const productModel = mongoose.model('products', productSchema)

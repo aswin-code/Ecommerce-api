@@ -10,11 +10,11 @@ exports.getAllProducts = async (req, res) => {
 }
 exports.createProducts = async (req, res) => {
     try {
-        const { name, price, offer, size, category, rating, description, deliveryFee } = req.body
+        const { name, price, offer, size, category, rating, description, deliveryFee, details } = req.body
         const image = req.files.map(e => e.filename)
         if (!name || !price || !offer || !size || !category || !rating) return res.status(400).json({ message: 'all fields require' })
         const discountPrice = price * (Number(offer) / 100)
-        const newProduct = new productModel({ name, price, discountPrice, offer, size, category, rating, image, deliveryFee, description })
+        const newProduct = new productModel({ name, price, discountPrice, offer, size, category, rating, image, deliveryFee, description, details })
         await newProduct.save()
         res.status(201).json({ message: 'product added successfully' })
     } catch (error) {

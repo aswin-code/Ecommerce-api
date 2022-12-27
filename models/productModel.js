@@ -14,7 +14,15 @@ const productSchema = mongoose.Schema({
     },
     rating: String,
     deliveryFee: String,
-    description: String
+    description: String,
+    details: {
+        ram: String,
+        processor: String,
+        frontCam: String,
+        rearCam: String,
+        display: String,
+        battery: String
+    }
 })
 
 const productModel = mongoose.model('products', productSchema)

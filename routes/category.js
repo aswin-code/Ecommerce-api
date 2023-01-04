@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+const productRoute = express.Router({ mergeParams: true })
 const categoryController = require('../controller/categoryController')
 const multer = require('multer')
 const storage = multer.diskStorage({
@@ -12,8 +13,10 @@ const storage = multer.diskStorage({
     },
 })
 const upload = multer({ storage })
-
+router.use('/:categoryid/products', productRoute)
 router.route('/')
     .get(categoryController.getAllCategory)
     .post(upload.single('category'), categoryController.createCategory)
+
+productRoute.route('/').get(categoryController.getAllProduct)
 module.exports = router

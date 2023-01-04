@@ -1,4 +1,5 @@
 const categoryModel = require('../models/categoryModel')
+const productModel = require('../models/productModel')
 
 exports.getAllCategory = async (req, res) => {
     try {
@@ -6,6 +7,15 @@ exports.getAllCategory = async (req, res) => {
         res.status(200).json(categorys)
     } catch (error) {
 
+    }
+}
+
+exports.getAllProduct = async (req, res) => {
+    try {
+        const products = await productModel.find({ category: req.params.categoryid })
+        res.status(200).json(products)
+    } catch (error) {
+        console.log(error)
     }
 }
 exports.createCategory = async (req, res) => {

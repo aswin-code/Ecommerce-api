@@ -2,7 +2,7 @@ const productModel = require('../models/productModel')
 
 exports.getAllProducts = async (req, res) => {
     try {
-        const products = await productModel.find(req.query)
+        const products = await productModel.find({ name: new RegExp(req.query?.search, 'i') })
         res.status(200).json(products)
     } catch (error) {
         console.log(error)
